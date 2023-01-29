@@ -27,24 +27,22 @@ public class Main {
             }
         }).start();
 
-        new Thread(() -> {
-            synchronized (sizeToFreq) {
-                if (sizeToFreq.isEmpty()) {
-                    try {
-                        sizeToFreq.wait();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-                System.out.println("Самое частое количество повторений "
-                        + sizeToFreq.keySet().stream().max(Comparator.comparing(sizeToFreq::get)).orElse(null)
-                        + " (встретилось " + Collections.max(sizeToFreq.values()) + " раз)");
-                System.out.println("Другие размеры:");
-                for (Map.Entry<Integer,Integer> pair : sizeToFreq.entrySet()){
-                    System.out.println("- " + pair.getKey() + " (" + pair.getValue() + " раз)");
+        synchronized (sizeToFreq) {
+            if (sizeToFreq.isEmpty()) {
+                try {
+                    sizeToFreq.wait();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
             }
-        }).start();
+            System.out.println("Самое частое количество повторений "
+                    + sizeToFreq.keySet().stream().max(Comparator.comparing(sizeToFreq::get)).orElse(null)
+                    + " (встретилось " + Collections.max(sizeToFreq.values()) + " раз)");
+            System.out.println("Другие размеры:");
+            for (Map.Entry<Integer, Integer> pair : sizeToFreq.entrySet()) {
+                System.out.println("- " + pair.getKey() + " (" + pair.getValue() + " раз)");
+            }
+        }
     }
 
     public static String generateRoute(String letters, int length) {
